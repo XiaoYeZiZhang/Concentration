@@ -7,31 +7,55 @@
 //
 
 import Foundation
-
 class Concentration {
-    init(numerOfPairsOfCards: Int) {
+    init(numberOfPairsOfCards: Int) {
+        assert(numberOfPairsOfCards > 0, "Concentration.init(numberOfPairsOfCards: \(numberOfPairsOfCards)): number of pairs of cards no more than zero")
         var range = Array<Int>()
-        for rangeIndex in 0..<numerOfPairsOfCards*2 {
+        for rangeIndex in 0..<numberOfPairsOfCards*2 {
             range += [rangeIndex]
         }
-        cards = [Card](repeating: Card(), count:numerOfPairsOfCards*2)
-        for _ in 1...numerOfPairsOfCards {
+        cards = [Card](repeating: Card(), count:numberOfPairsOfCards*2)
+        for _ in 1...numberOfPairsOfCards {
             let card = Card()
             //because card is a struct, value based
-            var randomIndex = (Int)(arc4random_uniform(UInt32(range.count)))
+            var randomIndex = range.count.randomValue
             
             cards[range[randomIndex]] = card
             range.remove(at: randomIndex)
-            randomIndex = (Int)(arc4random_uniform(UInt32(range.count)))
+            randomIndex = range.count.randomValue
             cards[range[randomIndex]] = card
             range.remove(at: randomIndex)
         }
     }
     
-    var cards = Array<Card>()
-    var oneCardIsFacedUpIndexAndOnly: Int?
+    
+    
+    private(set) var cards = Array<Card>()
+    private var oneCardIsFacedUpIndexAndOnly: Int? {
+        get {
+            var oneCardFaceUpIndex: Int?
+            for index in cards.indices {
+                if cards[index].isFaceUp {
+                    if oneCardFaceUpIndex == nil {
+                        oneCardFaceUpIndex = index
+                    }else {
+                        return nil
+                    }
+                }
+            }
+            return oneCardFaceUpIndex
+        }
+        
+        set(newValue) {
+            for index in cards.indices {
+                cards[index].isFaceUp = (index == newValue)
+            }
+        }
+    }
+    
     
     func chooseCard(at index: Int) {
+        assert(cards.indices.contains(index), "Concentration.chooseCard(at Index: \(index)): chosen index not in the card!" )
         if !cards[index].isMatched {
             if let facedUpCardIndex = oneCardIsFacedUpIndexAndOnly,index != facedUpCardIndex{
                 // judge if match
@@ -41,12 +65,7 @@ class Concentration {
                     cards[facedUpCardIndex].isMatched = true
                 }
                 cards[index].isFaceUp = true
-                oneCardIsFacedUpIndexAndOnly = nil
             }else {
-                for cardIndex in cards.indices {
-                    cards[cardIndex].isFaceUp = false;
-                }
-                cards[index].isFaceUp = true
                 oneCardIsFacedUpIndexAndOnly = index
             }
         }

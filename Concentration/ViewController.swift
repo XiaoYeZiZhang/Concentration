@@ -10,17 +10,23 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    lazy var game = Concentration(numerOfPairsOfCards: cardButtonArray.count / 2)
+    private lazy var game = Concentration(numberOfPairsOfCards: numberOfPairsOfCards)
+    
+    var numberOfPairsOfCards: Int {
+        get {
+            return cardButtonArray.count / 2
+        }
+    }
 
-    var flipCount = 0 {
+    private(set) var flipCount = 0 {
         didSet {
             FlipCountLabel.text = "Flips: \(flipCount)"
         }
     }
     
-    @IBOutlet var cardButtonArray: [UIButton]!
-    
-    @IBAction func touchCard(_ sender: UIButton) {
+    @IBOutlet private var cardButtonArray: [UIButton]!
+    @IBOutlet private weak var FlipCountLabel: UILabel!
+    @IBAction private func touchCard(_ sender: UIButton) {
         flipCount += 1
         if let cardNum = cardButtonArray.firstIndex(of: sender){
             game.chooseCard(at: cardNum)
@@ -30,7 +36,7 @@ class ViewController: UIViewController {
         }
     }
     
-    func updateViewFromModel() {
+    private func updateViewFromModel() {
         for index in cardButtonArray.indices {
             let button = cardButtonArray[index]
             let card = game.cards[index]
@@ -45,17 +51,26 @@ class ViewController: UIViewController {
         }
     }
     
-    var emojiDictionary = [Int:String]()
-    var emojiChoices = ["👹","👺","👿","😳","😊","☺️"]
-    
-    func emoji(for card: Card)->String{
+    private var emojiDictionary = [Int:String]()
+    private var emojiChoices = ["👹","👺","👿","😳","😊","☺️"]
+    private func emoji(for card: Card)->String{
         if emojiDictionary[card.identifier] == nil, emojiChoices.count > 0 {
-            let emojiIndex = Int(arc4random_uniform(UInt32(emojiChoices.count)))
-            emojiDictionary[card.identifier] = emojiChoices.remove(at: emojiIndex)
+            emojiDictionary[card.identifier] = emojiChoices.remove(at: emojiChoices.count.randomValue)
         }
         return emojiDictionary[card.identifier] ?? "?"
     }
     
-    @IBOutlet weak var FlipCountLabel: UILabel!
+}
+
+extension Int {
+    var randomValue: Int {
+        if self > 0 {
+            return Int(arc4random_uniform(UInt32(self)))
+        }else if self < 0 {
+            return -1 * Int(arc4random_uniform(UInt32(abs(self))))
+        }else {
+            return 0
+        }
+    }
 }
 
