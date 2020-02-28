@@ -7,7 +7,9 @@
 //
 
 import Foundation
-class Concentration {
+struct Concentration {
+    
+    // TODO:(zhangye) improve this initialize function
     init(numberOfPairsOfCards: Int) {
         assert(numberOfPairsOfCards > 0, "Concentration.init(numberOfPairsOfCards: \(numberOfPairsOfCards)): number of pairs of cards no more than zero")
         var range = Array<Int>()
@@ -54,7 +56,8 @@ class Concentration {
     }
     
     
-    func chooseCard(at index: Int) {
+    // MARK: core function of Concentration
+    mutating func chooseCard(at index: Int) {
         assert(cards.indices.contains(index), "Concentration.chooseCard(at Index: \(index)): chosen index not in the card!" )
         if !cards[index].isMatched {
             if let facedUpCardIndex = oneCardIsFacedUpIndexAndOnly,index != facedUpCardIndex{
