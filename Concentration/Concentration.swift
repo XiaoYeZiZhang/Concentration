@@ -16,13 +16,14 @@ struct Concentration {
         for rangeIndex in 0..<numberOfPairsOfCards*2 {
             range += [rangeIndex]
         }
-        
+
         cards = [Card](repeating: Card(), count:numberOfPairsOfCards*2)
         for _ in 1...numberOfPairsOfCards {
             let card = Card()
+//            cards += [card, card]
             //because card is a struct, value based
             var randomIndex = range.count.randomValue
-            
+
             cards[range[randomIndex]] = card
             range.remove(at: randomIndex)
             randomIndex = range.count.randomValue
@@ -36,17 +37,8 @@ struct Concentration {
     private(set) var cards = Array<Card>()
     private var oneCardIsFacedUpIndexAndOnly: Int? {
         get {
-            var oneCardFaceUpIndex: Int?
-            for index in cards.indices {
-                if cards[index].isFaceUp {
-                    if oneCardFaceUpIndex == nil {
-                        oneCardFaceUpIndex = index
-                    }else {
-                        return nil
-                    }
-                }
-            }
-            return oneCardFaceUpIndex
+            let faceUpCardsIndices = cards.indices.filter{cards[$0].isFaceUp}
+            return faceUpCardsIndices.oneAndOnly
         }
         
         set(newValue) {
@@ -74,5 +66,11 @@ struct Concentration {
             }
         }
         
+    }
+}
+
+extension Collection {
+    var oneAndOnly : Element? {
+        return self.count == 1 ? self.first : nil
     }
 }
