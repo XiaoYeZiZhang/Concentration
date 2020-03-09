@@ -16,6 +16,7 @@ struct Concentration {
         for rangeIndex in 0..<numberOfPairsOfCards*2 {
             range += [rangeIndex]
         }
+        
         cards = [Card](repeating: Card(), count:numberOfPairsOfCards*2)
         for _ in 1...numberOfPairsOfCards {
             let card = Card()
@@ -62,7 +63,7 @@ struct Concentration {
         if !cards[index].isMatched {
             if let facedUpCardIndex = oneCardIsFacedUpIndexAndOnly,index != facedUpCardIndex{
                 // judge if match
-                if cards[index].identifier == cards[facedUpCardIndex].identifier {
+                if cards[index] == cards[facedUpCardIndex] {
                     // matched
                     cards[index].isMatched = true
                     cards[facedUpCardIndex].isMatched = true

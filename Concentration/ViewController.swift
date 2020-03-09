@@ -46,18 +46,23 @@ class ViewController: UIViewController {
                 button.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
             }else {
                 button.setTitle("", for: UIControl.State.normal)
-                button.backgroundColor = card.isMatched ? #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1) : #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
+                if card.isMatched {
+                    button.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+                }else {
+                    button.backgroundColor = #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
+                }
+            
             }
         }
     }
     
-    private var emojiDictionary = [Int:String]()
+    private var emojiDictionary = [Card:String]()
     private var emojiChoices = ["👹","👺","👿","😳","😊","☺️"]
     private func emoji(for card: Card)->String{
-        if emojiDictionary[card.identifier] == nil, emojiChoices.count > 0 {
-            emojiDictionary[card.identifier] = emojiChoices.remove(at: emojiChoices.count.randomValue)
+        if emojiDictionary[card] == nil, emojiChoices.count > 0 {
+            emojiDictionary[card] = emojiChoices.remove(at: emojiChoices.count.randomValue)
         }
-        return emojiDictionary[card.identifier] ?? "?"
+        return emojiDictionary[card] ?? "?"
     }
     
 }
