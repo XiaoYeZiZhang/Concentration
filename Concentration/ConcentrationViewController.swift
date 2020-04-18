@@ -14,7 +14,7 @@ class ConcentrationViewController: UIViewController {
     
     var numberOfPairsOfCards: Int {
         get {
-            return cardButtonArray.count / 2
+            return visibleButton.count / 2
         }
     }
 
@@ -29,12 +29,31 @@ class ConcentrationViewController: UIViewController {
                 .strokeWidth : 5.0,
                 .strokeColor : #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
             ]
-        
-            let attrbutedString = NSAttributedString(string: "Flips: \(flipCount)", attributes: attributed)
-            FlipCountLabel.attributedText = attrbutedString
+        var attrbutedString = NSAttributedString(string: "Flips: \(flipCount)", attributes: attributed)
+        if traitCollection.verticalSizeClass == .compact {
+            attrbutedString = NSAttributedString(string: "Flips\n:\(flipCount)", attributes: attributed)
+        }
+        FlipCountLabel.attributedText = attrbutedString
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        UpdateFlipCountLabel()
     }
     
     @IBOutlet private var cardButtonArray: [UIButton]!
+    
+    private var visibleButton: [UIButton]! {
+        return cardButtonArray?.filter{
+            !$0.superview!.isHidden
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.updateViewFromModel()
+    }
+    
     @IBOutlet private weak var FlipCountLabel: UILabel! {
         didSet {
             UpdateFlipCountLabel()
@@ -42,7 +61,7 @@ class ConcentrationViewController: UIViewController {
     }
     @IBAction private func touchCard(_ sender: UIButton) {
         flipCount += 1
-        if let cardNum = cardButtonArray.firstIndex(of: sender){
+        if let cardNum = visibleButton.firstIndex(of: sender){
             game.chooseCard(at: cardNum)
             updateViewFromModel()
         }else {
@@ -51,9 +70,9 @@ class ConcentrationViewController: UIViewController {
     }
     
     private func updateViewFromModel() {
-        if cardButtonArray != nil {
-            for index in cardButtonArray.indices {
-                let button = cardButtonArray[index]
+        if visibleButton != nil {
+            for index in visibleButton.indices {
+                let button = visibleButton[index]
                 let card = game.cards[index]
                 
                 if card.isFaceUp {
